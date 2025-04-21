@@ -1,7 +1,8 @@
-// src/components/Filter/Filter.jsx
 import './Filter.css';
 
-function Filter({ lugares, onFilterChange }) {
+const tiposMovimiento = ['Ingreso', 'Egreso'];
+
+function Filter({ lugares, onFilterChange, currentFilters }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     onFilterChange({ [name]: value });
@@ -11,13 +12,27 @@ function Filter({ lugares, onFilterChange }) {
     <div className="filter">
       <h2 className="filter__title">Filtrar Transacciones</h2>
       <div className="filter__group">
-        <label className="filter__label" htmlFor="date">
-          Fecha
+        <label className="filter__label" htmlFor="startDate">
+          Fecha Inicio
         </label>
         <input
           type="date"
-          id="date"
-          name="date"
+          id="startDate"
+          name="startDate"
+          value={currentFilters.startDate}
+          onChange={handleChange}
+          className="filter__input"
+        />
+      </div>
+      <div className="filter__group">
+        <label className="filter__label" htmlFor="endDate">
+          Fecha Fin
+        </label>
+        <input
+          type="date"
+          id="endDate"
+          name="endDate"
+          value={currentFilters.endDate}
           onChange={handleChange}
           className="filter__input"
         />
@@ -29,6 +44,7 @@ function Filter({ lugares, onFilterChange }) {
         <select
           id="lugar"
           name="lugar"
+          value={currentFilters.lugar}
           onChange={handleChange}
           className="filter__input"
         >
@@ -47,12 +63,16 @@ function Filter({ lugares, onFilterChange }) {
         <select
           id="tipo"
           name="tipo"
+          value={currentFilters.tipo}
           onChange={handleChange}
           className="filter__input"
         >
           <option value="">Todos</option>
-          <option value="Ingreso">Ingreso</option>
-          <option value="Egreso">Egreso</option>
+          {tiposMovimiento.map((tipo) => (
+            <option key={tipo} value={tipo}>
+              {tipo}
+            </option>
+          ))}
         </select>
       </div>
     </div>

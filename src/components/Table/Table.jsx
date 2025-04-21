@@ -1,9 +1,45 @@
+import { writeFile, utils } from 'xlsx';
 import './Table.css';
 
-function Table({ transactions }) {
+function Table({ transactions, totalExpenses, startDate, endDate }) {
+  const handleExportExcel = () => {
+    const data = transactions.map((tx) => ({
+      Consecutivo: tx.consecutivo,
+      Fecha: tx.fecha,
+      Tipo: tx.tipoMovimiento,
+      Monto: tx.monto,
+      'Forma de Pago': tx.formaPago,
+      Lugar: tx.lugar,
+      Concepto: tx.concepto,
+      Detalle: tx.detalle || '',
+      Recibo: tx.recibo || '',
+    }));
+
+    const worksheet = utils.json_to_sheet(data);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, 'Transacciones');
+    writeFile(workbook, 'transacciones.xlsx');
+  };
+
   return (
     <div className="table">
       <h2 className="table__title">Transacciones</h2>
+      <div className="table__actions">
+        <button
+          className="table__button table__button--export"
+          onClick={handleExportExcel}
+        >
+          Descargar Excel
+        </button>
+      </div>
+      {startDate && endDate && (
+        <p className="table__total">
+          Gastos del {startDate} al {endDate}: ${totalExpenses.toFixed(2)}
+        </p>
+      )}
+      <p className="table__total">
+        Gasto total: ${totalExpenses.toFixed(2)}
+      </p>
       <table className="table__content">
         <thead>
           <tr>

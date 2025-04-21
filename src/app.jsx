@@ -9,7 +9,7 @@ import './app.css';
 function App() {
   const [transactions, setTransactions] = useState([]);
   const [lugares, setLugares] = useState([]);
-  const [filters, setFilters] = useState({ date: '', lugar: '', tipo: '' });
+  const [filters, setFilters] = useState({ startDate: '', endDate: '', lugar: '', tipo: '' });
   const [error, setError] = useState('');
 
   // Fetch initial lugares and listen for transactions
@@ -46,11 +46,20 @@ function App() {
 
   // Filter transactions based on state
   const filteredTransactions = transactions.filter((tx) => {
-    const matchesDate = filters.date ? tx.fecha === filters.date : true;
+    const txDate = new Date(tx.fecha);
+    const startDate = filters.startDate ? new Date(filters.startDate) : null;
+    const endDate = filters.endDate ? new Date(filters.endDate) : null;
+    const matchesDate =
+      (!startDate || txDate >= startDate) && (!endDate || txDate <= endDate);
     const matchesLugar = filters.lugar ? tx.lugar === filters.lugar : true;
     const matchesTipo = filters.tipo ? tx.tipoMovimiento === filters.tipo : true;
     return matchesDate && matchesLugar && matchesTipo;
   });
+
+  // Calculate total expenses
+  const totalExpenses = filteredTransactions
+    .filter((tx) => tx.tipoMovimiento === 'Egreso')
+    .reduce((sum, tx) => sum + tx.monto, 0);
 
   return (
     <div className="app">
@@ -70,8 +79,17 @@ function App() {
             setLugares((prev) => prev.filter((lugar) => lugar.nombre !== deletedLugar));
           }}
         />
-        <Filter lugares={lugares.map((l) => l.nombre)} onFilterChange={handleFilterChange} />
-        <Table transactions={filteredTransactions} />
+        <Filter
+          lugares={lugares.map((l) => l.nombre)}
+          onFilterChange={handleFilterChange}
+          currentFilters={filters}
+        />
+        <Table
+          transactions={filteredTransactions}
+          totalExpenses={totalExpenses}
+          startDate={filters.startDate}
+          endDate={filters.endDate}
+        />
       </main>
     </div>
   );

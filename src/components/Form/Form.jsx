@@ -72,7 +72,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
         console.log('Recibo uploaded, URL:', reciboUrl);
       } catch (err) {
         console.error('Recibo upload error:', err.message);
-        setError('Error al subir el recibo. Guardando transacción sin recibo.');
+        setError('Error al subir el recibo a ImgBB. Guardando transacción sin recibo.');
         // Continue without recibo
       }
     }

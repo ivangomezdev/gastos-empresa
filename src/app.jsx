@@ -3,7 +3,7 @@ import Header from './components/Header/Header';
 import Form from './components/Form/Form';
 import Filter from './components/Filter/Filter';
 import Table from './components/Table/Table';
-import { getTransactions, getLugares } from './lib/firebase';
+import { getTransactions, getLugares, initializeAuth } from './lib/firebase';
 import './app.css';
 
 function App() {
@@ -16,14 +16,16 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('Initializing authentication');
+        await initializeAuth();
         console.log('Fetching initial data');
         const txs = await getTransactions();
         setTransactions(txs);
         const lugs = await getLugares();
         setLugares(lugs);
       } catch (err) {
-        console.error('Error fetching initial data:', err);
-        setError('Error al cargar datos iniciales. Verifique la conexión a Firebase.');
+        console.error('Error fetching initial data:', err.message);
+        setError('Error al cargar datos iniciales. Verifique los permisos de Firebase.');
       }
     };
     fetchData();
@@ -66,4 +68,5 @@ function App() {
     </div>
   );
 }
-export default App
+
+export default App;

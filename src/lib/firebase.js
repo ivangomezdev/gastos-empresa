@@ -23,6 +23,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
+
+// Initialize anonymous authentication
+export async function initializeAuth() {
+  try {
+    await signInAnonymously(auth);
+    console.log('Signed in anonymously');
+  } catch (err) {
+    console.error('Authentication error:', err.message);
+    throw err;
+  }
+}
 
 export async function addTransaction(transaction) {
   try {
@@ -31,7 +43,7 @@ export async function addTransaction(transaction) {
     console.log('Transaction added successfully, ID:', docRef.id);
     return docRef;
   } catch (err) {
-    console.error('Error adding transaction:', err);
+    console.error('Error adding transaction:', err.message);
     throw err;
   }
 }
@@ -44,7 +56,7 @@ export async function getTransactions() {
     console.log('Transactions fetched:', transactions);
     return transactions;
   } catch (err) {
-    console.error('Error fetching transactions:', err);
+    console.error('Error fetching transactions:', err.message);
     throw err;
   }
 }
@@ -56,7 +68,7 @@ export async function addLugar(lugar) {
     console.log('Lugar added successfully, ID:', docRef.id);
     return docRef;
   } catch (err) {
-    console.error('Error adding lugar:', err);
+    console.error('Error adding lugar:', err.message);
     throw err;
   }
 }
@@ -69,7 +81,7 @@ export async function getLugares() {
     console.log('Lugares fetched:', lugares);
     return lugares;
   } catch (err) {
-    console.error('Error fetching lugares:', err);
+    console.error('Error fetching lugares:', err.message);
     throw err;
   }
 }
@@ -87,7 +99,7 @@ export async function deleteLugar(lugar) {
     await Promise.all(deletePromises);
     console.log('Lugar deleted successfully');
   } catch (err) {
-    console.error('Error deleting lugar:', err);
+    console.error('Error deleting lugar:', err.message);
     throw err;
   }
 }

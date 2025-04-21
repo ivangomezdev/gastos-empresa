@@ -1,4 +1,3 @@
-/* src/components/Form/Form.jsx */
 import { useState } from 'preact/hooks';
 import { addTransaction, addLugar, deleteLugar, uploadRecibo } from '../../lib/firebase';
 import './Form.css';
@@ -72,8 +71,8 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
         reciboUrl = await uploadRecibo(formData.recibo);
         console.log('Recibo uploaded, URL:', reciboUrl);
       } catch (err) {
-        console.error('Recibo upload error:', err);
-        setError('Error al subir el recibo. Guardando transacción sin recibo.');
+        console.error('Recibo upload error:', err.message);
+        setError('Error al subir el recibo (puede ser un problema de CORS). Guardando transacción sin recibo.');
         // Continue without recibo
       }
     }
@@ -107,8 +106,8 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       });
       setError('');
     } catch (err) {
-      console.error('Transaction save error:', err);
-      setError('Error al guardar la transacción. Verifique la conexión a Firestore.');
+      console.error('Transaction save error:', err.message);
+      setError('Error al guardar la transacción. Verifique los permisos de Firestore.');
     }
   };
 
@@ -132,8 +131,8 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       setNewLugar('');
       setError('');
     } catch (err) {
-      console.error('Add lugar error:', err);
-      setError('Error al agregar el lugar. Verifique la conexión a Firestore.');
+      console.error('Add lugar error:', err.message);
+      setError('Error al agregar el lugar. Verifique los permisos de Firestore.');
     }
   };
 
@@ -144,8 +143,8 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       onLugarDeleted(lugar);
       setError('');
     } catch (err) {
-      console.error('Delete lugar error:', err);
-      setError('Error al eliminar el lugar. Verifique la conexión a Firestore.');
+      console.error('Delete lugar error:', err.message);
+      setError('Error al eliminar el lugar. Verifique los permisos de Firestore.');
     }
   };
 

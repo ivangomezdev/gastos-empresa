@@ -3,7 +3,8 @@ import './Table.css';
 
 function Table({ transactions, totalExpenses, startDate, endDate }) {
   const handleExportExcel = () => {
-    const data = transactions.map((tx) => ({
+    // Prepare data for the main sheet
+    const allData = transactions.map((tx) => ({
       Consecutivo: tx.consecutivo,
       Fecha: tx.fecha,
       Tipo: tx.tipoMovimiento,
@@ -14,10 +15,57 @@ function Table({ transactions, totalExpenses, startDate, endDate }) {
       Detalle: tx.detalle || '',
       Recibo: tx.recibo || '',
     }));
-
-    const worksheet = utils.json_to_sheet(data);
+  
+    // Calculate total expenses for all transactions
+    const totalAllExpenses = transactions
+      .filter((tx) => tx.tipoMovimiento === 'Egreso')
+      .reduce((sum, tx) => sum + tx.monto, 0);
+  
+    // Create main sheet
+    const mainWorksheet = utils.json_to_sheet([
+      ...allData,
+      {}, // Empty row
+      { Consecutivo: 'Gasto Total', Monto: totalAllExpenses },
+    ]);
+  
+    // Create workbook
     const workbook = utils.book_new();
-    utils.book_append_sheet(workbook, worksheet, 'Transacciones');
+    utils.book_append_sheet(workbook, mainWorksheet, 'Transacciones');
+  
+    // Group transactions by lugar
+    const lugares = [...new Set(transactions.map((tx) => tx.lugar))];
+    lugares.forEach((lugar) => {
+      const lugarTransactions = transactions.filter((tx) => tx.lugar === lugar);
+      const lugarData = lugarTransactions.map((tx) => ({
+        Consecutivo: tx.consecutivo,
+        Fecha: tx.fecha,
+        Tipo: tx.tipoMovimiento,
+        Monto: tx.monto,
+        'Forma de Pago': tx.formaPago,
+        Lugar: tx.lugar,
+        Concepto: tx.concepto,
+        Detalle: tx.detalle || '',
+        Recibo: tx.recibo || '',
+      }));
+  
+      // Calculate total expenses for this lugar
+      const totalLugarExpenses = lugarTransactions
+        .filter((tx) => tx.tipoMovimiento === 'Egreso')
+        .reduce((sum, tx) => sum + tx.monto, 0);
+  
+      // Create sheet for this lugar
+      const lugarWorksheet = utils.json_to_sheet([
+        ...lugarData,
+        {}, // Empty row
+        { Consecutivo: 'Gasto Total', Monto: totalLugarExpenses },
+      ]);
+  
+      // Append sheet, ensuring valid sheet name
+      const safeLugarName = lugar.replace(/[:\\\/\?\*\[\]]/g, '_').substring(0, 31);
+      utils.book_append_sheet(workbook, lugarWorksheet, safeLugarName);
+    });
+  
+    // Export the workbook
     writeFile(workbook, 'transacciones.xlsx');
   };
 

@@ -1,0 +1,28 @@
+.filter {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .filter__title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .filter__group {
+    margin-bottom: 15px;
+  }
+  
+  .filter__label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .filter__input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }

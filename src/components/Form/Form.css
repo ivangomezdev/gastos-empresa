@@ -1,0 +1,89 @@
+export default Form;
+
+/* Updated src/components/Form/Form.css */
+.form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form__title {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.form__group {
+  margin-bottom: 15px;
+}
+
+.form__label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form__input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form__input--textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.form__input--lugar {
+  width: 70%;
+  margin-right: 10px;
+}
+
+.form__lugar-add {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.form__lugar-list {
+  margin-top: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.form__lugar-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.form__button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form__button--submit {
+  background-color: #2c3e50;
+  color: white;
+}
+
+.form__button--add {
+  background-color: #3498db;
+  color: white;
+}
+
+.form__button--delete {
+  background-color: #e74c3c;
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.form__error {
+  color: red;
+  margin-bottom: 10px;
+}

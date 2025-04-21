@@ -4,7 +4,7 @@ import Form from './components/Form/Form';
 import Filter from './components/Filter/Filter';
 import Table from './components/Table/Table';
 import { getLugares, listenTransactions } from './lib/firebase';
-import './App.css';
+import './app.css';
 
 function App() {
   const [transactions, setTransactions] = useState([]);

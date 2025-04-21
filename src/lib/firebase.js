@@ -7,11 +7,8 @@ import {
   query,
   where,
   deleteDoc,
-  doc,
   onSnapshot,
 } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
 
 const firebaseConfig = {
   apiKey: "AIzaSyC9-w-sOXmqG7bZr9mgJTLbyI06fApY3sg",
@@ -24,7 +21,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
+
+// ImgBB API key (replace with your own)
+const IMGBB_API_KEY = 'YOUR_IMGBB_API_KEY';
 
 export async function addTransaction(transaction) {
   try {
@@ -116,14 +115,26 @@ export async function deleteLugar(lugar) {
 
 export async function uploadRecibo(file) {
   try {
-    console.log('Uploading recibo to Storage:', file.name);
-    const storageRef = ref(storage, `recibos/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    console.log('Recibo uploaded, URL:', url);
+    console.log('Uploading recibo to ImgBB:', file.name);
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('key', IMGBB_API_KEY);
+
+    const response = await fetch('https://api.imgbb.com/1/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (!data.success) {
+      throw new Error('ImgBB upload failed: ' + data.error.message);
+    }
+
+    const url = data.data.url;
+    console.log('Recibo uploaded to ImgBB, URL:', url);
     return url;
   } catch (err) {
-    console.error('Error uploading recibo:', err.message);
+    console.error('Error uploading recibo to ImgBB:', err.message);
     throw err;
   }
 }

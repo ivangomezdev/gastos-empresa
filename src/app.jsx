@@ -3,8 +3,8 @@ import Header from './components/Header/Header';
 import Form from './components/Form/Form';
 import Filter from './components/Filter/Filter';
 import Table from './components/Table/Table';
-import { getTransactions, getLugares, listenTransactions } from './lib/firebase';
-import './app.css';
+import { getLugares, listenTransactions } from './lib/firebase';
+import './App.css';
 
 function App() {
   const [transactions, setTransactions] = useState([]);

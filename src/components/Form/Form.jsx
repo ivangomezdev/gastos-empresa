@@ -67,12 +67,12 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
     let reciboUrl = '';
     if (formData.recibo) {
       try {
-        console.log('Uploading recibo:', formData.recibo.name);
+        console.log('Uploading recibo to ImgBB:', formData.recibo.name);
         reciboUrl = await uploadRecibo(formData.recibo);
         console.log('Recibo uploaded, URL:', reciboUrl);
       } catch (err) {
         console.error('Recibo upload error:', err.message);
-        setError('Error al subir el recibo (puede ser un problema de CORS). Guardando transacción sin recibo.');
+        setError('Error al subir el recibo. Guardando transacción sin recibo.');
         // Continue without recibo
       }
     }

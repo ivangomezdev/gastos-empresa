@@ -23,7 +23,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ImgBB API key (replace with your own)
-const IMGBB_API_KEY = 'YOUR_IMGBB_API_KEY';
+const IMGBB_API_KEY = 'bbeed037ebe1fa1ae59cefa429df7dec';
 
 export async function addTransaction(transaction) {
   try {

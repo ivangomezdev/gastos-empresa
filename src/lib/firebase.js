@@ -8,9 +8,9 @@ import {
   where,
   deleteDoc,
   doc,
+  onSnapshot,
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth, signInAnonymously } from 'firebase/auth';
 
 
 const firebaseConfig = {
@@ -25,18 +25,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const auth = getAuth(app);
-
-// Initialize anonymous authentication
-export async function initializeAuth() {
-  try {
-    await signInAnonymously(auth);
-    console.log('Signed in anonymously');
-  } catch (err) {
-    console.error('Authentication error:', err.message);
-    throw err;
-  }
-}
 
 export async function addTransaction(transaction) {
   try {
@@ -59,6 +47,26 @@ export async function getTransactions() {
     return transactions;
   } catch (err) {
     console.error('Error fetching transactions:', err.message);
+    throw err;
+  }
+}
+
+export function listenTransactions(onUpdate, onError) {
+  try {
+    console.log('Setting up real-time listener for transactions');
+    const unsubscribe = onSnapshot(
+      collection(db, 'transactions'),
+      (snapshot) => {
+        const transactions = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        onUpdate(transactions);
+      },
+      (err) => {
+        onError(err);
+      }
+    );
+    return unsubscribe;
+  } catch (err) {
+    console.error('Error setting up transaction listener:', err.message);
     throw err;
   }
 }

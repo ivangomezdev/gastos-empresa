@@ -307,13 +307,14 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       </div>
       <div className="form__group">
         <label className="form__label" htmlFor="recibo">
-          Recibo
+          Recibo (Archivo o Cámara)
         </label>
         <input
           type="file"
           id="recibo"
           name="recibo"
           accept="image/*"
+          capture="environment"
           onChange={handleChange}
           className="form__input"
         />

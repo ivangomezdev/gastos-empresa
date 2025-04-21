@@ -3,7 +3,7 @@ import Header from './components/Header/Header';
 import Form from './components/Form/Form';
 import Filter from './components/Filter/Filter';
 import Table from './components/Table/Table';
-import { getTransactions, getLugares, initializeAuth } from './lib/firebase';
+import { getTransactions, getLugares, listenTransactions } from './lib/firebase';
 import './app.css';
 
 function App() {
@@ -12,23 +12,31 @@ function App() {
   const [filters, setFilters] = useState({ date: '', lugar: '', tipo: '' });
   const [error, setError] = useState('');
 
-  // Fetch initial data
+  // Fetch initial lugares and listen for transactions
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchLugares = async () => {
       try {
-        console.log('Initializing authentication');
-        await initializeAuth();
-        console.log('Fetching initial data');
-        const txs = await getTransactions();
-        setTransactions(txs);
+        console.log('Fetching lugares');
         const lugs = await getLugares();
         setLugares(lugs);
       } catch (err) {
-        console.error('Error fetching initial data:', err.message);
-        setError('Error al cargar datos iniciales. Verifique los permisos de Firebase.');
+        console.error('Error fetching lugares:', err.message);
+        setError('Error al cargar lugares. Verifique los permisos de Firebase.');
       }
     };
-    fetchData();
+    fetchLugares();
+
+    // Listen for transactions in real-time
+    const unsubscribe = listenTransactions((txs) => {
+      console.log('Transactions updated:', txs);
+      setTransactions(txs);
+    }, (err) => {
+      console.error('Error listening to transactions:', err.message);
+      setError('Error al cargar transacciones. Verifique los permisos de Firebase.');
+    });
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
 
   // Handle filter changes

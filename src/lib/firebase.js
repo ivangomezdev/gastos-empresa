@@ -7,8 +7,10 @@ import {
   query,
   where,
   deleteDoc,
+  doc,
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 
 
 const firebaseConfig = {

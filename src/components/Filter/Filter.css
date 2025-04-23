@@ -3,18 +3,26 @@
   padding: 24px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  max-width: 800px !important;
+  max-width: 100% !important;
  text-align: center;
+ display: flex;
+
+ align-items: center;
 }
 
 .filter__title {
   font-size: 22px;
+  margin-right: 30px;
+
   font-weight: 600;
   color: #333;
 }
 
 .filter__group {
   margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
 }
 
 .filter__label {
@@ -33,4 +41,16 @@
 .filter__input:focus {
   border-color: #007bff;
   outline: none;
+}
+
+.filter__groupCont{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+@media(max-width:900px){
+  .filter__groupCont{
+  
+  }
 }

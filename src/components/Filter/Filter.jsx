@@ -11,6 +11,7 @@ function Filter({ lugares, onFilterChange, currentFilters }) {
   return (
     <div className="filter">
       <h2 className="filter__title">Filtrar Transacciones</h2>
+      <div className='filter__groupCont'>
       <div className="filter__group">
         <label className="filter__label" htmlFor="startDate">
           Fecha Inicio
@@ -74,6 +75,7 @@ function Filter({ lugares, onFilterChange, currentFilters }) {
             </option>
           ))}
         </select>
+      </div>
       </div>
     </div>
   );

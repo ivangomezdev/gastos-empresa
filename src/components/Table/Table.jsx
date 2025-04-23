@@ -1,9 +1,8 @@
 import { writeFile, utils } from 'xlsx';
 import './Table.css';
 
-function Table({ transactions, totalExpenses, startDate, endDate }) {
+function Table({ transactions, totalIngresos, totalEgresos, gastoNeto, startDate, endDate }) {
   const handleExportExcel = () => {
-    // Prepare data for the main sheet
     const allData = transactions.map((tx) => ({
       Consecutivo: tx.consecutivo,
       Fecha: tx.fecha,
@@ -15,24 +14,18 @@ function Table({ transactions, totalExpenses, startDate, endDate }) {
       Detalle: tx.detalle || '',
       Recibo: tx.recibo || '',
     }));
-  
-    // Calculate total expenses for all transactions
-    const totalAllExpenses = transactions
-      .filter((tx) => tx.tipoMovimiento === 'Egreso')
-      .reduce((sum, tx) => sum + tx.monto, 0);
-  
-    // Create main sheet
+
     const mainWorksheet = utils.json_to_sheet([
       ...allData,
-      {}, // Empty row
-      { Consecutivo: 'Gasto Total', Monto: totalAllExpenses },
+      {},
+      { Consecutivo: 'Total Ingresos', Monto: totalIngresos },
+      { Consecutivo: 'Total Egresos', Monto: totalEgresos },
+      { Consecutivo: 'Gasto Neto', Monto: gastoNeto },
     ]);
-  
-    // Create workbook
+
     const workbook = utils.book_new();
     utils.book_append_sheet(workbook, mainWorksheet, 'Transacciones');
-  
-    // Group transactions by lugar
+
     const lugares = [...new Set(transactions.map((tx) => tx.lugar))];
     lugares.forEach((lugar) => {
       const lugarTransactions = transactions.filter((tx) => tx.lugar === lugar);
@@ -47,25 +40,29 @@ function Table({ transactions, totalExpenses, startDate, endDate }) {
         Detalle: tx.detalle || '',
         Recibo: tx.recibo || '',
       }));
-  
-      // Calculate total expenses for this lugar
-      const totalLugarExpenses = lugarTransactions
+
+      const ingresosLugar = lugarTransactions
+        .filter((tx) => tx.tipoMovimiento === 'Ingreso')
+        .reduce((sum, tx) => sum + tx.monto, 0);
+
+      const egresosLugar = lugarTransactions
         .filter((tx) => tx.tipoMovimiento === 'Egreso')
         .reduce((sum, tx) => sum + tx.monto, 0);
-  
-      // Create sheet for this lugar
+
+      const netoLugar = ingresosLugar - egresosLugar;
+
       const lugarWorksheet = utils.json_to_sheet([
         ...lugarData,
-        {}, // Empty row
-        { Consecutivo: 'Gasto Total', Monto: totalLugarExpenses },
+        {},
+        { Consecutivo: 'Total Ingresos', Monto: ingresosLugar },
+        { Consecutivo: 'Total Egresos', Monto: egresosLugar },
+        { Consecutivo: 'Gasto Neto', Monto: netoLugar },
       ]);
-  
-      // Append sheet, ensuring valid sheet name
+
       const safeLugarName = lugar.replace(/[:\\\/\?\*\[\]]/g, '_').substring(0, 31);
       utils.book_append_sheet(workbook, lugarWorksheet, safeLugarName);
     });
-  
-    // Export the workbook
+
     writeFile(workbook, 'transacciones.xlsx');
   };
 
@@ -80,14 +77,11 @@ function Table({ transactions, totalExpenses, startDate, endDate }) {
           Descargar Excel
         </button>
       </div>
-      {startDate && endDate && (
-        <p className="table__total">
-          Gastos del {startDate} al {endDate}: ${totalExpenses.toFixed(2)}
-        </p>
-      )}
-      <p className="table__total">
-        Gasto total: ${totalExpenses.toFixed(2)}
-      </p>
+      <div className="table__totals">
+        <p className="table__total">Ingreso total: ${totalIngresos.toFixed(2)}</p>
+        <p className="table__total">Egreso total: ${totalEgresos.toFixed(2)}</p>
+        <p className="table__total">Gasto neto (Ingreso - Egreso): ${gastoNeto.toFixed(2)}</p>
+      </div>
       <table className="table__content">
         <thead>
           <tr>

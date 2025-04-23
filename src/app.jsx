@@ -12,7 +12,6 @@ function App() {
   const [filters, setFilters] = useState({ startDate: '', endDate: '', lugar: '', tipo: '' });
   const [error, setError] = useState('');
 
-  // Fetch initial lugares and listen for transactions
   useEffect(() => {
     const fetchLugares = async () => {
       try {
@@ -26,7 +25,6 @@ function App() {
     };
     fetchLugares();
 
-    // Listen for transactions in real-time
     const unsubscribe = listenTransactions((txs) => {
       console.log('Transactions updated:', txs);
       setTransactions(txs);
@@ -35,31 +33,32 @@ function App() {
       setError('Error al cargar transacciones. Verifique los permisos de Firebase.');
     });
 
-    // Cleanup listener on unmount
     return () => unsubscribe();
   }, []);
 
-  // Handle filter changes
   const handleFilterChange = (newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
-  // Filter transactions based on state
   const filteredTransactions = transactions.filter((tx) => {
     const txDate = new Date(tx.fecha);
     const startDate = filters.startDate ? new Date(filters.startDate) : null;
     const endDate = filters.endDate ? new Date(filters.endDate) : null;
-    const matchesDate =
-      (!startDate || txDate >= startDate) && (!endDate || txDate <= endDate);
+    const matchesDate = (!startDate || txDate >= startDate) && (!endDate || txDate <= endDate);
     const matchesLugar = filters.lugar ? tx.lugar === filters.lugar : true;
     const matchesTipo = filters.tipo ? tx.tipoMovimiento === filters.tipo : true;
     return matchesDate && matchesLugar && matchesTipo;
   });
 
-  // Calculate total expenses
-  const totalExpenses = filteredTransactions
+  const totalIngresos = filteredTransactions
+    .filter((tx) => tx.tipoMovimiento === 'Ingreso')
+    .reduce((sum, tx) => sum + tx.monto, 0);
+
+  const totalEgresos = filteredTransactions
     .filter((tx) => tx.tipoMovimiento === 'Egreso')
     .reduce((sum, tx) => sum + tx.monto, 0);
+
+  const gastoNeto = totalIngresos - totalEgresos;
 
   return (
     <div className="app">
@@ -75,7 +74,6 @@ function App() {
             setLugares((prev) => [...prev, newLugar]);
           }}
           onLugarDeleted={(deletedLugar) => {
-            console.log('Lugar deleted in App:', deletedLugar);
             setLugares((prev) => prev.filter((lugar) => lugar.nombre !== deletedLugar));
           }}
         />
@@ -86,7 +84,9 @@ function App() {
         />
         <Table
           transactions={filteredTransactions}
-          totalExpenses={totalExpenses}
+          totalIngresos={totalIngresos}
+          totalEgresos={totalEgresos}
+          gastoNeto={gastoNeto}
           startDate={filters.startDate}
           endDate={filters.endDate}
         />

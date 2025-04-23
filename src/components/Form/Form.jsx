@@ -254,7 +254,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
             onClick={handleAddLugar}
             className="form__button form__button--add"
           >
-            Agregar Lugar
+           +
           </button>
         </div>
         <div className="form__lugar-list">

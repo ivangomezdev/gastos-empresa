@@ -1,28 +1,36 @@
 .filter {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .filter__title {
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-  
-  .filter__group {
-    margin-bottom: 15px;
-  }
-  
-  .filter__label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .filter__input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  max-width: 800px !important;
+ text-align: center;
+}
+
+.filter__title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+}
+
+.filter__group {
+  margin-bottom: 18px;
+}
+
+.filter__label {
+  font-size: 14px;
+  color: #555;
+  margin-right: 10px;
+}
+
+.filter__input {
+  font-size: 14px;
+  border: 1px solid #bbb;
+  transition: border 0.3s;
+  border-radius: 5px;
+}
+
+.filter__input:focus {
+  border-color: #007bff;
+  outline: none;
+}

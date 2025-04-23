@@ -3,6 +3,7 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
 }
 
 .form__title {
@@ -71,6 +72,10 @@
 .form__button--add {
   background-color: #3498db;
   color: white;
+  width: 50px;
+  height:33px;
+  font-weight: bold;
+  margin-left: 10px;
 }
 
 .form__button--delete {
@@ -83,4 +88,54 @@
 .form__error {
   color: red;
   margin-bottom: 10px;
+}
+
+.form__input,
+.form__input--textarea,
+.form__input--lugar {
+  box-sizing: border-box; /* Esto incluye padding y border en el ancho */
+  width: 90% !important;
+  margin-right: 0;
+}
+
+
+@media (max-width: 768px) {
+  .form {
+    padding: 25px;
+  }
+
+  .form__input,
+  .form__input--textarea,
+  .form__input--lugar {
+    width: 90% !important;
+    margin-right: 0;
+  }
+
+  .form__lugar-add {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form__button--add {
+    margin-top: 10px;
+    width: 90% !important;
+  }
+
+  .form__lugar-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form__button--delete {
+    margin-top: 5px;
+    align-self: flex-end;
+  }
+
+  .form__button {
+    width: 100%;
+  }
+
+  .form__button--submit {
+    margin-top: 15px;
+  }
 }

@@ -5,6 +5,7 @@ import './Form.css';
 const tiposMovimiento = ['Ingreso', 'Egreso'];
 const formasPago = ['Efectivo', 'Transferencia', 'Tarjeta'];
 const conceptos = [
+  'Ingreso', // Added to support Ingreso type
   'Herramientas',
   'Equipo de trabajo',
   'Insumos',
@@ -39,6 +40,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
   });
   const [newLugar, setNewLugar] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -50,6 +52,11 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return; // Prevent multiple submissions
+
+    setIsSubmitting(true);
+    setError('');
+
     const requiredFields = [
       'fecha',
       'tipoMovimiento',
@@ -61,6 +68,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
     const isValid = requiredFields.every((field) => formData[field]);
     if (!isValid) {
       setError('Todos los campos requeridos deben estar completos.');
+      setIsSubmitting(false);
       return;
     }
 
@@ -108,6 +116,8 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
     } catch (err) {
       console.error('Transaction save error:', err.message);
       setError('Error al guardar la transacción. Verifique los permisos de Firestore.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -154,6 +164,12 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
     ...lugares.filter((l) => !defaultLugares.includes(l.nombre)),
   ];
 
+  // Determine if tipoMovimiento is Ingreso to control input states
+  const isIngreso = formData.tipoMovimiento === 'Ingreso';
+
+  // Filter conceptos based on tipoMovimiento
+  const availableConceptos = isIngreso ? ['Ingreso'] : conceptos.filter(c => c !== 'Ingreso');
+
   return (
     <form className="form" onSubmit={handleSubmit}>
       <h2 className="form__title">Registrar Transacción</h2>
@@ -179,7 +195,23 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
           id="tipoMovimiento"
           name="tipoMovimiento"
           value={formData.tipoMovimiento}
-          onChange={handleChange}
+          onChange={(e) => {
+            handleChange(e);
+            // Reset concepto and lugar when tipoMovimiento changes
+            if (e.target.value === 'Ingreso') {
+              setFormData((prev) => ({
+                ...prev,
+                concepto: 'Ingreso',
+                lugar: '',
+                detalle: '',
+              }));
+            } else {
+              setFormData((prev) => ({
+                ...prev,
+                concepto: '',
+              }));
+            }
+          }}
           className="form__input"
         >
           <option value="">Seleccionar</option>
@@ -233,6 +265,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
           value={formData.lugar}
           onChange={handleChange}
           className="form__input"
+          disabled={isIngreso}
         >
           <option value="">Seleccionar</option>
           {allLugares.map((lugar) => (
@@ -254,7 +287,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
             onClick={handleAddLugar}
             className="form__button form__button--add"
           >
-           +
+            +
           </button>
         </div>
         <div className="form__lugar-list">
@@ -284,9 +317,10 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
           value={formData.concepto}
           onChange={handleChange}
           className="form__input"
+          disabled={isIngreso} // Disable if Ingreso to prevent changing from 'Ingreso'
         >
           <option value="">Seleccionar</option>
-          {conceptos.map((concepto) => (
+          {availableConceptos.map((concepto) => (
             <option key={concepto} value={concepto}>
               {concepto}
             </option>
@@ -303,6 +337,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
           value={formData.detalle}
           onChange={handleChange}
           className="form__input form__input--textarea"
+          disabled={isIngreso}
         />
       </div>
       <div className="form__group">
@@ -319,8 +354,12 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
           className="form__input"
         />
       </div>
-      <button type="submit" className="form__button form__button--submit">
-        Guardar Transacción
+      <button
+        type="submit"
+        className="form__button form__button--submit"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? 'Cargando...' : 'Guardar Transacción'}
       </button>
     </form>
   );

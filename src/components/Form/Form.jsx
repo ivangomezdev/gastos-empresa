@@ -252,7 +252,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
         <select
           id="formaPago"
           name="formaPago"
-          value={formData.formData.formaPago}
+          value={formData.formaPago} // Fixed: Changed from formData.formData.formaPago
           onChange={handleChange}
           className="form__input"
         >

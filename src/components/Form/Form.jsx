@@ -58,22 +58,11 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
     setError('');
 
     // Define required fields based on tipoMovimiento
-    let requiredFields = ['fecha', 'tipoMovimiento', 'monto', 'formaPago'];
-    if (formData.tipoMovimiento === 'Egreso') {
-      requiredFields = [...requiredFields, 'lugar', 'concepto', 'recibo'];
-    } else if (formData.tipoMovimiento === 'Ingreso') {
-      // For Ingreso, concepto is fixed to 'Ingreso', so it's not user-input but should be valid
-      requiredFields = [...requiredFields, 'concepto'];
-    }
+    const requiredFields = formData.tipoMovimiento === 'Ingreso'
+      ? ['fecha', 'monto', 'formaPago']
+      : ['fecha', 'tipoMovimiento', 'monto', 'formaPago', 'lugar', 'concepto'];
 
-    // Validate required fields
-    const isValid = requiredFields.every((field) => {
-      if (field === 'recibo') {
-        return formData[field] !== null && formData[field] !== undefined;
-      }
-      return formData[field];
-    });
-
+    const isValid = requiredFields.every((field) => formData[field]);
     if (!isValid) {
       setError('Todos los campos requeridos deben estar completos.');
       setIsSubmitting(false);
@@ -88,9 +77,8 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
         console.log('Recibo uploaded, URL:', reciboUrl);
       } catch (err) {
         console.error('Recibo upload error:', err.message);
-        setError('Error al subir el recibo a ImgBB.');
-        setIsSubmitting(false);
-        return; // Stop submission if recibo upload fails
+        setError('Error al subir el recibo a ImgBB. Guardando transacción sin recibo.');
+        // Continue without recibo
       }
     }
 
@@ -100,9 +88,9 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       tipoMovimiento: formData.tipoMovimiento,
       monto: parseFloat(formData.monto),
       formaPago: formData.formaPago,
-      lugar: formData.lugar || '', // Empty string for Ingreso
+      lugar: formData.lugar,
       concepto: formData.concepto,
-      detalle: formData.detalle || '', // Empty string for Ingreso
+      detalle: formData.detalle,
       recibo: reciboUrl,
     };
 
@@ -185,7 +173,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       {error && <p className="form__error">{error}</p>}
       <div className="form__group">
         <label className="form__label" htmlFor="fecha">
-          Fecha *
+          Fecha
         </label>
         <input
           type="date"
@@ -198,7 +186,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       </div>
       <div className="form__group">
         <label className="form__label" htmlFor="tipoMovimiento">
-          Tipo de Movimiento *
+          Tipo de Movimiento
         </label>
         <select
           id="tipoMovimiento"
@@ -233,7 +221,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       </div>
       <div className="form__group">
         <label className="form__label" htmlFor="monto">
-          Monto *
+          Monto
         </label>
         <input
           type="number"
@@ -247,12 +235,12 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       </div>
       <div className="form__group">
         <label className="form__label" htmlFor="formaPago">
-          Forma de Pago *
+          Forma de Pago
         </label>
         <select
           id="formaPago"
           name="formaPago"
-          value={formData.formaPago} // Fixed: Changed from formData.formData.formaPago
+          value={formData.formaPago}
           onChange={handleChange}
           className="form__input"
         >
@@ -266,7 +254,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       </div>
       <div className="form__group">
         <label className="form__label" htmlFor="lugar">
-          Lugar {isIngreso ? '(Opcional)' : '*'}
+          Lugar
         </label>
         <select
           id="lugar"
@@ -318,7 +306,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       </div>
       <div className="form__group">
         <label className="form__label" htmlFor="concepto">
-          Concepto *
+          Concepto
         </label>
         <select
           id="concepto"
@@ -338,7 +326,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       </div>
       <div className="form__group">
         <label className="form__label" htmlFor="detalle">
-          Detalle {isIngreso ? '(Opcional)' : ''}
+          Detalle
         </label>
         <textarea
           id="detalle"
@@ -351,7 +339,7 @@ function Form({ lugares, onSubmit, onLugarAdded, onLugarDeleted }) {
       </div>
       <div className="form__group">
         <label className="form__label" htmlFor="recibo">
-          Recibo (Archivo o Cámara) {formData.tipoMovimiento === 'Egreso' ? '*' : '(Opcional)'}
+          Recibo (Archivo o Cámara)
         </label>
         <input
           type="file"
